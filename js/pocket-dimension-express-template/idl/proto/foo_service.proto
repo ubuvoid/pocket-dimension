@@ -1,0 +1,33 @@
+// Example proto definition for a REST service.
+//
+// Shows how to use proto definitions to generate validators for REST payloads.
+syntax = "proto2";
+
+package pocketdimension.example.foo;
+
+service FooService {
+  rpc Method1(Method1Request) returns (Method1Response);
+}
+
+message Method1Request {
+  optional string some_param = 1;
+  optional double another_param = 2;
+}
+
+message Method1Response {
+  optional string information = 1;
+
+  // Number fields of various types, used to show how different number types
+  // are rendered in json-proto conversion.
+  optional double fractional_score = 2;
+  optional int32 small_integer_metadata = 3;
+  optional uint32 unsigned_small_int_metadata = 4;
+  optional uint64 bigger_unsigned_integer_metadata = 5;
+
+  // Embedded message objects:
+  message InnerData {
+    optional string id = 1;
+    optional double value = 2;
+  }
+  repeated InnerData data_points = 6;
+}

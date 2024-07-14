@@ -1,0 +1,21 @@
+{
+  "name": "pocket-dimension-framework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r esm index.js",
+    "dev": "nodemon -r esm index.js",
+    "test": "mocha --require esm --reporter spec"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}

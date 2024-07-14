@@ -1,0 +1,24 @@
+{
+  "name": "pocket-dimension-proto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r esm index.js",
+    "dev": "nodemon -r esm index.js",
+    "test": "mocha --require esm --reporter spec"
+  },
+  "dependencies": {
+    "pbf": "^3.2.1",
+    "recursive-diff": "^1.0.8",
+    "resolve-protobuf-schema": "^2.1.0"
+  },
+  "devDependencies": {
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}

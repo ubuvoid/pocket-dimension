@@ -18,21 +18,27 @@ router.get('/', function(req, res, next) {
 
 
 // Endpoint for an example REST service.
-// TODO Write IDL (JTD, proto, etc.) and supply validator fn's generated from IDL.
-const handler = pocket.serviceUtils.buildServiceHandler("FooService");
+// TODO Write IDL (JTD, proto, etc.) for the service method names, requests and responses.
+const serviceHandler = pocket.serviceUtils.buildServiceHandler("FooService");
 
 const method1Handler = function (app, request_data, response_data) {
-  // TODO Write an actual handler, populate response_data, and return okStatus()
+  // TODO Write an actual method handler, populate response_data, and return okStatus()
   return pocket.statusUtils.notImplementedStatus();
 }
 
-// TODO: Write validator functions from object schemas and pass them in here.
-handler.registerCallback("Method1", method1Handler);
+// TODO: Generate validator functions from object schemas (IDL) and pass them in here.
+serviceHandler.registerCallback("Method1", method1Handler);
 
 app.post('/foo/method1', async function(req, res, next) {
   try {
+    // local service calls are invoked async, to allow method handlers to make async calls as needed.
     let result = await pocket.serviceUtils.invokeLocalServiceCall(
-      req.app, handler, "Method1", req.body);
+      req.app, serviceHandler, "Method1", req.body);
+    // If no error was thrown, result looks like:
+    //  {
+    //    data: {},  // contains response data as populated by the method handler.
+    //    info: {}   // contains status code and message. see statusUtils.js in pocket-dimension-framework.
+    //  }
     res.json(result);
   } catch (error) {
     console.error(error);

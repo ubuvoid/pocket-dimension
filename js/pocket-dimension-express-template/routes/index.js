@@ -4,8 +4,7 @@
 var express = require('express');
 var app = express();
 
-var pocketDimension = require('pocket-dimension-framework');
-var serviceUtils = pocketDimension.serviceUtils;
+var pocket = require('pocket-dimension-framework');
 
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
@@ -19,11 +18,12 @@ router.get('/', function(req, res, next) {
 
 
 // Endpoint for an example REST service.
-const handler = serviceUtils.buildServiceHandler("FooService");
+// TODO Write IDL (JTD, proto, etc.) and supply validator fn's generated from IDL.
+const handler = pocket.serviceUtils.buildServiceHandler("FooService");
 
 const method1Handler = function (app, request_data, response_data) {
   // TODO Write an actual handler, populate response_data, and return okStatus()
-  return statusUtils.notImplementedStatus();
+  return pocket.statusUtils.notImplementedStatus();
 }
 
 // TODO: Write validator functions from object schemas and pass them in here.
@@ -31,7 +31,7 @@ handler.registerCallback("Method1", method1Handler);
 
 app.post('/foo/method1', async function(req, res, next) {
   try {
-    let result = await serviceUtils.invokeLocalServiceCall(
+    let result = await pocket.serviceUtils.invokeLocalServiceCall(
       req.app, handler, "Method1", req.body);
     res.json(result);
   } catch (error) {

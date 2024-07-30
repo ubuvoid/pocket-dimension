@@ -10,7 +10,7 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+app.get('/', function(req, res, next) {
   // TODO: Update this template with something specific, like directions for
   // how to query an example rest endpoint.
   res.render('index', { title: 'Pocket Dimension Example' });
@@ -29,6 +29,7 @@ const method1Handler = function (app, request_data, response_data) {
 // TODO Generate validator functions from object schemas (IDL) and pass them in here.
 serviceHandler.registerCallback("Method1", method1Handler);
 
+// Post handler (request obj as json body)
 app.post('/foo/method1', async function(req, res, next) {
   try {
     // local service calls are invoked async, to allow method handlers to make async calls as needed.

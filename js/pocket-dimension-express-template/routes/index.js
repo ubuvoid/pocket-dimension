@@ -5,6 +5,7 @@ var express = require('express');
 var app = express();
 
 var pocket = require('pocket-dimension-framework');
+var pocketProto = require('pocket-dimension-proto');
 
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
@@ -18,16 +19,21 @@ app.get('/', function(req, res, next) {
 
 
 // Endpoint for an example REST service.
-// TODO Write IDL (JTD, proto, etc.) for the service method requests and responses.
 const serviceHandler = pocket.serviceUtils.buildServiceHandler("FooService");
 
-// TODO Write an actual method handler, populate response_data, and return okStatus().
+// Build validator from idl definition (can also be generated and checked in).
+const fooPbf = pocketProto.protoUtils.compileProto("idl/proto/foo_service.proto");
+
+// TODO Write actual method handler, populate response_data, return okStatus().
 const method1Handler = function (app, request_data, response_data) {
   return pocket.statusUtils.notImplementedStatus();
 }
 
-// TODO Generate validator functions from object schemas (IDL) and pass them in here.
-serviceHandler.registerCallback("Method1", method1Handler);
+// TODO Generate validator functions from object schemas (IDL) and pass them in.
+serviceHandler.registerCallback(
+  "Method1", method1Handler,
+  pocketProto.protoUtils.buildPbfValidatorFn(fooPbf.Method1Request),
+  pocketProto.protoUtils.buildPbfValidatorFn(fooPbf.Method1Response));
 
 // Post handler (request obj as json body)
 app.post('/foo/method1', async function(req, res, next) {

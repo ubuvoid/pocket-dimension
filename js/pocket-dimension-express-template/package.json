@@ -12,7 +12,10 @@
     "express": "^4.19.2",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
+    "pbf": "^3.2.1",
     "pocket-dimension-framework": "file:../pocket-dimension-framework",
-    "pocket-dimension-proto": "file:../pocket-dimension-proto"
+    "pocket-dimension-proto": "file:../pocket-dimension-proto",
+    "recursive-diff": "^1.0.8",
+    "resolve-protobuf-schema": "^2.1.0"
   }
 }

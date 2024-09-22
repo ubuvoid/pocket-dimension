@@ -54,16 +54,19 @@ const invokeFlexibleLocalRpcHandler = async function(
 const invokeLocalRpcHandler = async function(
     app, handlerFn, request_validator_fn, response_validator_fn,
     request_data, response_data = {}) {
-  // ensure that the request_data conforms to expected message protocol.
+  // Ensure that the request_data conforms to expected schema.
+  // Assumes ajv-style validators, where validation failures are kept in an
+  // 'errors' property of the validator function.
   if (request_validator_fn) {
     try {
       if (!request_validator_fn(request_data)) {
-        console.error("Caller supplied invalid request data: ", err)
+        console.error("Request validation failure: ",
+                      request_validator_fn.errors)
         return { info: { status: statusUtils.badRequestStatus() } }
       }
     } catch (err) {
       // Encountered an exception when attempting to validate.
-      console.error("Error when trying to validate request data: ", err)
+      console.error("Request validation error: ", err)
       return { info: { status: statusUtils.internalErrorStatus() } }
     }
   }
@@ -77,12 +80,13 @@ const invokeLocalRpcHandler = async function(
     if (response_validator_fn) {
       try {
         if (!response_validator_fn(response_data)) {
-          console.error("Caller supplied invalid response data: ", err)
+          console.error("Response validation failure: ",
+                        response_validator_fn.errors)
           return { info: { status: statusUtils.internalErrorStatus() } }
         }
       } catch (err) {
         // Encountered an exception when attempting to validate.
-        console.error("Error when trying to validate response data: ", err)
+        console.error("Response validation error: ", err)
         return { info: { status: statusUtils.internalErrorStatus() } }
       }
     }

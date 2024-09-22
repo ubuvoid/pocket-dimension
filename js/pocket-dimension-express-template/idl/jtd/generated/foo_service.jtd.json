@@ -1,0 +1,50 @@
+{
+  "discriminator": "method_name",
+  "mapping": {
+    "Method1": {
+      "properties": {
+        "request": {
+          "properties": {
+            "some_param": {
+              "type": "string"
+            },
+            "another_param": {
+              "type": "float64"
+            }
+          }
+        },
+        "response": {
+          "properties": {
+            "information": {
+              "type": "string"
+            },
+            "fractional_score": {
+              "type": "float64"
+            },
+            "small_integer_metadata": {
+              "type": "int32"
+            },
+            "unsigned_small_int_metadata": {
+              "type": "uint32"
+            },
+            "bigger_unsigned_integer_metadata": {
+              "type": "string"
+            },
+            "data_points": {
+              "elements": {
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "float64"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

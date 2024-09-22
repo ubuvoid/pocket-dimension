@@ -4,10 +4,10 @@
 // Tested with one-offs and prototypes, but may need additional review before
 // production use.
 
-var Pbf = require('pbf')
 var RecursiveDiff = require('recursive-diff')
 var path = require('path')
 var resolve = require('resolve-protobuf-schema')
+var Pbf = require('pbf')
 var compile = require('pbf/compile')
 
 // Resolves dependencies and compiles a protocol buffer schema from a .proto file.
@@ -77,9 +77,10 @@ var emptyObjFromProto = function(protoDesc) {
 //       marked 'required' in proto must be set. don't do this -- use of
 //       required fields in proto is STRONGLY discouraged.)
 //   - obj properties may be set to default values that correspond to their
-//       default values. (strings can be '', objects can be null, booleans can
-//       be false, int's can be 0, etc. (assuming proto3 syntax)).
-//
+//     default values. (strings can be '', objects can be null, booleans can be
+//     false, int's can be 0, etc.  (assuming default proto3 semantics)).
+//   - if opts.allow_null_for_default is set true, allow 'null' to stand in for
+//     a field's default value.
 //  protos are checked recursively, so embedded message field obj's must also
 //  pass checks for their proto defs, and so on for embedded message fields of
 //  those obj's.
@@ -91,7 +92,7 @@ var emptyObjFromProto = function(protoDesc) {
 //     console.log("type error, failed proto check: " + err);
 //     return;
 //   }
-var checkProto = function(protoDesc, obj) {
+var checkProto = function(protoDesc, obj, opts={}) {
   try {
     // generate another plain object by encoding and reinflating obj as
     // proto. the result will have the following properties:
@@ -134,7 +135,7 @@ var checkProto = function(protoDesc, obj) {
         // proto string fields default to '', so we allow null as a proxy for
         // proto defaults.
         // TODO: Add configuration options for null behavior.
-        if (d.val === null) {
+        if (opts.allow_null_for_default && d.val === null) {
           continue
         }
         // otherwise...

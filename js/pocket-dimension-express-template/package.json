@@ -13,6 +13,7 @@
     "express": "^4.19.2",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
+    "pbf": "^3.2.1",
     "pocket-dimension-framework": "file:../pocket-dimension-framework"
   }
 }

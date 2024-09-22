@@ -71,6 +71,7 @@ serviceHandler.registerCallback(
   ajv.compile(foo_service_jtd.mapping["Method1"].properties.request),
   ajv.compile(foo_service_jtd.mapping["Method1"].properties.response));
 
+// Post handler (request obj as json body)
 app.post('/foo/method1', async function(req, res, next) {
   try {
     // local service calls are invoked async, to allow method handlers to make

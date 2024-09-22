@@ -13,8 +13,7 @@
     "recursive-diff": "^1.0.8",
     "resolve-protobuf-schema": "^2.1.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "jest": {
     "testEnvironment": "node",
     "coveragePathIgnorePatterns": [

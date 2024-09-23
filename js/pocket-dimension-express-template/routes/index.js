@@ -71,7 +71,7 @@ const method1Handler = function (app, request_data, response_data) {
     response_data.data_points.push(
         {id: "factoid_" + randomInt(9999), value: Math.random() })
   }
-  // This example method always returns okStatus (200).
+  // This example handler always returns okStatus (200).
   // For error cases, handlers should create and return an appropriate
   // error status via statusUtils.
   return pocket.statusUtils.okStatus();

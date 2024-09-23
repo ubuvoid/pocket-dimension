@@ -1,11 +1,12 @@
 // Built upon template generated with express-generator.
 // Status: draft.
 
-const Ajv = require('ajv/dist/jtd');
-const ajv = new Ajv();
-
 const express = require('express');
 const pocket = require('pocket-dimension-framework');
+
+// For json payload validation.
+const Ajv = require('ajv/dist/jtd');
+const ajv = new Ajv();
 
 // General Express setup:
 const app = express();
@@ -21,10 +22,7 @@ app.get('/', function(req, res, next) {
 
 // Pocket Dimension setup:
 
-// Endpoint for an example REST service.
-const serviceHandler = pocket.serviceUtils.buildServiceHandler("FooService");
-
-// JTD schema definition. See included file for an example.
+// JTD schema definition, used to generate request and response validators.
 // Recommended format (fill in "properties" for each request and response):
 // {
 //    "discriminator": "method_name",
@@ -38,20 +36,32 @@ const serviceHandler = pocket.serviceUtils.buildServiceHandler("FooService");
 //      "AnotherMethodName": {
 //        "properties": {
 //          "request": { "properties": { ... } },
-//          "response": { "properties": { ... } }}
+//          "response": { "properties": { ... } }
 //        }
+//      }
 //    }
 // }
+// Schemas can be parsed from json, or defined in code as a json-compatible
+// object such as the one included here. To be validated with AJV.
 const foo_service_jtd = require('../idl/jtd/foo_service.jtd.cjs');
 
-// Populate response_data, return okStatus().
+// Endpoint for an example REST service.
+const serviceHandler = pocket.serviceUtils.buildServiceHandler("FooService");
+
+// Example method handler.
+// Pocket Dimension passes in the Express 'app' to serve as a context, and for
+// dependency injection via app.locals.
+// The handler should return a status of the type created by pocket.statusUtils.
+// request_data is the parsed REST request body.
+// response_data is an object which should be updated to reflect the response.
 const method1Handler = function (app, request_data, response_data) {
   const randomInt = function (span, offset = 0) {
     return Math.floor((Math.random() * span) + offset)
   }
-  // For this example method, we ignore the input and generate random data
-  response_data.information = "amazing_fact_" + randomInt(9999)
-  response_data.fractional_score = Math.random()
+  // Incorporate some info from the request, because it makes for a good demo.
+  response_data.information = "amazing_" + request_data.some_param +  "_fact_" + randomInt(9999)
+  response_data.fractional_score = request_data.another_param * Math.random()
+  // The remaining fields are random.
   response_data.small_integer_metadata = randomInt(Math.pow(2,32), -(Math.pow(2,31)))
   response_data.unsigned_small_int_metadata = randomInt(Math.pow(2,32))
   response_data.bigger_unsigned_integer_metadata = randomInt(Math.pow(2,48)).toString()
@@ -61,33 +71,35 @@ const method1Handler = function (app, request_data, response_data) {
     response_data.data_points.push(
         {id: "factoid_" + randomInt(9999), value: Math.random() })
   }
-
+  // This example method always returns okStatus (200).
+  // For error cases, handlers should create and return an appropriate
+  // error status via statusUtils.
   return pocket.statusUtils.okStatus();
 }
 
+// Register callbacks, with AJV request and response validators.
 serviceHandler.registerCallback(
   "Method1",
   method1Handler,
   ajv.compile(foo_service_jtd.mapping["Method1"].properties.request),
   ajv.compile(foo_service_jtd.mapping["Method1"].properties.response));
 
-// Post handler (request obj as json body)
-app.post('/foo/method1', async function(req, res, next) {
+// HTTP POST handler, where the REST route implements a service method.
+app.post('/foo/method1', async function(request, response, next) {
   try {
     // local service calls are invoked async, to allow method handlers to make
-    // async calls as needed.
+    // async calls as needed. If no errors are thrown, result looks like:
+    // {
+    //   data: {},  // Contains response data populated by method handler.
+    //   info: {}   // Contains status code and message. See statusUtils.
+    // }
     const result = await pocket.serviceUtils.invokeLocalServiceCall(
-      req.app, serviceHandler, "Method1", req.body);
-    // If no error was thrown, result looks like:
-    //  {
-    //    data: {},  // contains response data populated by method handler
-    //    info: {}   // contains status code and message, see statusUtils
-    //  }
-    res.json(result);
+      request.app, serviceHandler, "Method1", request.body);
+    response.json(result);
   } catch (error) {
     console.error(error);
-    res.status(500);
-    res.send("Error: " + error);
+    response.status(500);
+    response.send("Error: " + error);
   }
 });
 
